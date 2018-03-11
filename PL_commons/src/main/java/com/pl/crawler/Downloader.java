@@ -1,6 +1,7 @@
 package com.pl.crawler;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -18,13 +19,20 @@ import org.apache.http.util.EntityUtils;
  */
 public class Downloader {
 	public static Page download(Request request) throws IOException {
-		if(request.getUrl()==null||request.getCharset()==null) {
+		if (request.getUrl() == null || request.getCharset() == null) {
 			return null;
 		}
 		CloseableHttpClient httpClient = HttpClientGenerator.generateClient();
 		Page page = null;
 		try {
 			HttpGet httpget = new HttpGet(request.getUrl());
+			// 加入headers
+			if (request.getHeaders() != null) {
+				Map<String, String> headers = request.getHeaders();
+				for (Map.Entry<String, String> entry : headers.entrySet()) {
+					httpget.addHeader(entry.getKey(), entry.getValue());
+				}
+			}
 			// Create a custom response handler
 			ResponseHandler<Page> responseHandler = new ResponseHandler<Page>() {
 
