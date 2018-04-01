@@ -1,6 +1,7 @@
 package com.pl.crawler;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
@@ -18,21 +19,25 @@ import org.apache.http.util.EntityUtils;
  * @date 2018年3月4日 下午8:32:33
  */
 public class Downloader {
+
+	private static final String DEFAULT_CHARSET="UTF-8";//默认的页面字符解码为UTF-8
+	private static final String DEFAULT_USERAGENT="Mozilla/5.0 (Windows NT 10.0; WOW64; rv:59.0) Gecko/20100101 Firefox/59.0";//默认的浏览器header
 	public static Page download(Request request) throws IOException {
-		if (request.getUrl() == null || request.getCharset() == null) {
-			return null;
+		if (request.getUrl() == null) {
+			throw new IOException("请求的url为空，请加入请求url");
 		}
 		CloseableHttpClient httpClient = HttpClientGenerator.generateClient();
 		Page page = null;
 		try {
 			HttpGet httpget = new HttpGet(request.getUrl());
 			// 加入headers
-			if (request.getHeaders() != null) {
+			if (request.getHeaders().size() != 0) {
 				Map<String, String> headers = request.getHeaders();
 				for (Map.Entry<String, String> entry : headers.entrySet()) {
 					httpget.addHeader(entry.getKey(), entry.getValue());
 				}
 			}
+			httpget.addHeader("User-Agent",DEFAULT_USERAGENT);
 			// Create a custom response handler
 			ResponseHandler<Page> responseHandler = new ResponseHandler<Page>() {
 
@@ -41,24 +46,22 @@ public class Downloader {
 					int status = response.getStatusLine().getStatusCode();
 					HttpEntity entity = response.getEntity();
 					if (entity != null) {
-						return new Page(EntityUtils.toString(entity, request.getCharset()), status);
+						if(status==200) {
+							return new Page(EntityUtils.toString(entity, request.getCharset()!=null?request.getCharset():DEFAULT_CHARSET));
+						}else {
+							throw new IOException("请求不成功，状态码为非200");
+						}
 					} else {
-						return null;
+						throw new IOException("返回的页面内容为空");
 					}
 				}
 			};
-
-			try {
-				page = httpClient.execute(httpget, responseHandler);
-			} catch (IOException e) {
-				throw new IOException("调用httpClient.execute()的时候发生异常");
-			}
-
+			page = httpClient.execute(httpget, responseHandler);
 		} finally {
 			try {
 				httpClient.close();
 			} catch (IOException e) {
-				throw new IOException("调用httpClient.close()的时候发生异常");
+				e.printStackTrace();
 			}
 		}
 		return page;

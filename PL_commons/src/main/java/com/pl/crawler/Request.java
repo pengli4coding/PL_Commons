@@ -10,25 +10,45 @@ import java.util.Map;
  * @author pengli4coding
  * @date 2018年3月4日 下午8:54:55
  */
-public class Request implements Serializable{
+public class Request implements Serializable {
 	private static final long serialVersionUID = -1116420586207374019L;
-	
+
 	private String url;
-	
+
 	private String method;
-	
-	private Map<String,String> cookies=new HashMap<String,String>();
-	
-	private Map<String,String> headers=new HashMap<String,String>();
-	
+
+	private Map<String, String> cookies = new HashMap<String, String>();
+
+	private Map<String, String> headers = new HashMap<String, String>();
+
 	private String charset;
+	
+	public void addHeader(String key,String value) {
+		this.headers.put(key, value);
+	}
 
 	public Request() {
+	}
+	/**
+	 * 
+	 * @param url 请求的url
+	 */
+	public Request(String url) {
+		this.url = url;
+	}
+
+	/**
+	 * 
+	 * @param url 请求的url
+	 * @param charset 解码字符集
+	 */
+	public Request(String url, String charset) {
+		this.url = url;
+		this.charset = charset;
 	}
 
 	public Request(String url, String method, Map<String, String> cookies, Map<String, String> headers,
 			String charset) {
-		super();
 		this.url = url;
 		this.method = method;
 		this.cookies = cookies;
@@ -81,6 +101,5 @@ public class Request implements Serializable{
 		return "Request [url=" + url + ", method=" + method + ", cookies=" + cookies + ", headers=" + headers
 				+ ", charset=" + charset + "]";
 	}
-	
-	
+
 }

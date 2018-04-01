@@ -9,15 +9,12 @@ public class Page {
 	
 	private String responseContent;
 
-	private int status;
-
 	public Page() {
 	}
 
-	public Page(String responseContent, int status) {
+	public Page(String responseContent) {
 		super();
 		this.responseContent = responseContent;
-		this.status = status;
 	}
 
 	public String getResponseContent() {
@@ -28,19 +25,13 @@ public class Page {
 		this.responseContent = responseContent;
 	}
 
-	public int getStatus() {
-		return status;
-	}
-
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
 	@Override
 	public String toString() {
-		return "Page [responseContent=" + responseContent + ", status=" + status + "]";
+		return "Page [responseContent=" + responseContent + "]";
 	}
+	
 
+	
 	
 	
 	
